@@ -60,44 +60,26 @@ Decrypts an encrypted message with the recipient's RSAKey and verifies the signa
 
 Returns: `status`, `plaintext`, `signature`, `publicKeyString`
 
-`status`: "success" if decryption succeeded, "failure" if it failed. *Does not reflect the status of the signature verification.*
+`status`: "success" if decryption succeeded, "failure" if it failed. **Does not reflect the status of the signature verification.**
 
 `plaintext`: The decrypted message.
     
-`signature`: "unsigned" if there was no signature, "verified" if it is signed and valid, *"forged" if the signature fails verification*.
+`signature`: "unsigned" if there was no signature, "verified" if it is signed and valid, **"forged" if the signature fails verification**.
 
-`publicKeyString`: public key string of the signature (presumably the sender). *Returned even if the signature appears to be forged*.
+`publicKeyString`: public key string of the signature (presumably the sender). **Returned even if the signature appears to be forged**.
 
 # Encryption Technical Documentation
 
 ## Key generation
 
-A hash is generated of the user's passphrase using the SHA256 algorithm found at
-<a href="http://www.webtoolkit.info/javascript-sha256.html">webtoolkit.info</a>.  
-This hash is used to seed 
-<a href="http://davidbau.com/archives/2010/01/30/random_seeds_coded_hints_and_quintillions.html">David Bau's seedable random number generator</a>. 
-A (seeded) random RSA key is generated with 
-<a href="http://www-cs-students.stanford.edu/~tjw/jsbn/">Tom Wu's RSA key generator</a> 
-with 3 as a hard-coded public exponent.
+A hash is generated of the user's passphrase using the SHA256 algorithm found at <a href="http://www.webtoolkit.info/javascript-sha256.html">webtoolkit.info</a>. This hash is used to seed <a href="http://davidbau.com/archives/2010/01/30/random_seeds_coded_hints_and_quintillions.html">David Bau's seedable random number generator</a>. A (seeded) random RSA key is generated with <a href="http://www-cs-students.stanford.edu/~tjw/jsbn/">Tom Wu's RSA key generator</a> with 3 as a hard-coded public exponent.
 
 ## Encryption
 
-A 32-byte AES key is generated with
-<a href="http://www-cs-students.stanford.edu/~tjw/jsbn/">Tom Wu's random number generator</a>.
-The plaintext message is converted to a byte string and padded with zeros to 16
-bytes round.  An initialization vector is created with
-<a href="http://www-cs-students.stanford.edu/~tjw/jsbn/">Tom Wu's random number generator</a>.
-The AES key is expanded and the plaintext message is encrypted with the
-Cipher-block chaining mode using the
-<a href="http://point-at-infinity.org/jsaes/">jsaes</a> library.
-The AES key is encrypted with the recipient's public key using 
-<a href="http://www-cs-students.stanford.edu/~tjw/jsbn/">Tom Wu's RSA encryption library</a>.
+A 32-byte AES key is generated with <a href="http://www-cs-students.stanford.edu/~tjw/jsbn/">Tom Wu's random number generator</a>. The plaintext message is converted to a byte string and padded with zeros to 16 bytes round.  An initialization vector is created with <a href="http://www-cs-students.stanford.edu/~tjw/jsbn/">Tom Wu's random number generator</a>. The AES key is expanded and the plaintext message is encrypted with the Cipher-block chaining mode using the <a href="http://point-at-infinity.org/jsaes/">jsaes</a> library. The AES key is encrypted with the recipient's public key using <a href="http://www-cs-students.stanford.edu/~tjw/jsbn/">Tom Wu's RSA encryption library</a>.
 
-The encrypted AES key and encrypted message are ascii-armored and concatenated
-with the "?" character as a delimiter.  As an example, here is the result of the
-phrase "Matt, I need you to help me with my Starcraft strategy." encrypted with
-the passphrase "The Moon is a Harsh Mistress." used to generate the 1024-bit
-public key:
+The encrypted AES key and encrypted message are ascii-armored and concatenated with the "?" character as a delimiter.  As an example, here is the result of the phrase "Matt, I need you to help me with my Starcraft strategy." encrypted with
+the passphrase "The Moon is a Harsh Mistress." used to generate the 1024-bit public key:
 
     EuvU2Ov3gpgM9B1I3VzEgxaAVO/Iy85NARUFZb/h+HrOP72degP0L1fWiHO3
     RDm5+kWRaV6oZsn91juJ0L+hrP6BDwlIza9x9DBMEsg3PnOHJENG63RXbu0q
