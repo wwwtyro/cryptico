@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+
+cat jsbn.js random.js hash.js rsa.js aes.js api.js > cryptico.js
+
+java -jar compiler.jar --compilation_level SIMPLE_OPTIMIZATIONS --js cryptico.js --js_output_file cryptico.min.js
