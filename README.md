@@ -1,3 +1,92 @@
+# cryptico
+
+## Overview
+
+### Generating an RSA key pair & public key string
+
+Sam wants to send Matt an encrypted message.  In order to do this, he first needs Matt's public key string.  A public key pair can be generated for Matt like this:
+
+```javascript
+// The passphrase used to repeatably generate this RSA key.
+var PassPhrase = "The Moon is a Harsh Mistress."; 
+
+// The length of the RSA key, in bits.
+var Bits = 1024; 
+
+var MattsRSAkey = cryptico.generateRSAKey(PassPhrase, Bits);
+```
+
+Matt's public key string can then be generated like this:
+
+```javascript
+var MattsPublicKeyString = cryptico.publicKeyString(MattsRSAkey);       
+```
+
+and looks like this:
+        
+    uXjrkGqe5WuS7zsTg6Z9DuS8cXLFz38ue+xrFzxrcQJCXtVccCoUFP2qH/AQ
+    4qMvxxvqkSYBpRm1R5a4/NdQ5ei8sE8gfZEq7dlcR+gOSv3nnS4/CX1n5Z5m
+    8bvFPF0lSZnYQ23xlyjXTaNacmV0IuZbqWd4j9LfdAKq5dvDaoE=
+
+### Encrypting a message
+
+Matt emails Sam his public key string.  Now Sam can encrypt a message for Matt:
+
+```javascript
+var PlainText = "Matt, I need you to help me with my Starcraft strategy.";
+
+var EncryptionResult = cryptico.encrypt(PlainText, MattsPublicKeyString);
+```
+
+`EncryptionResult.cipher` is the encrypted message, and looks like this:
+
+    OOHoAlfm6Viyl7afkUVRoYQv24AfdLnxaay5GjcqpxvEK+dph5kUFZEZIFKo
+    vVoHoZbtUMekSbMqHQr3wNNpvcNWr4E3DgNLfMZQA1pCAUVmPjNM1ZQmrkKY
+    HPKvkhmVKaBiYAJGoO/YiFfKnaylLpKOYJZctkZc4wflZcEEqqg=?cJPt71I
+    HcU5c2LgqGXQKcx2BaAbm25Q2Ku94c933LX5MObL9qbTJEVEv29U0C3gIqcd
+    qwMV6nl33GtHjyRdHx5fZcon21glUKIbE9P71NwQ=
+
+### Decrypting a message
+    
+Sam sends his encrypted message to Matt. The message can be decrypted like this:
+    
+```javascript
+var CipherText = "OOHoAlfm6Viyl7afkUVRoYQv24AfdLnxaay5GjcqpxvEK+dph5kUFZEZIFKo \
+                  vVoHoZbtUMekSbMqHQr3wNNpvcNWr4E3DgNLfMZQA1pCAUVmPjNM1ZQmrkKY \
+                  HPKvkhmVKaBiYAJGoO/YiFfKnaylLpKOYJZctkZc4wflZcEEqqg=?cJPt71I \
+                  HcU5c2LgqGXQKcx2BaAbm25Q2Ku94c933LX5MObL9qbTJEVEv29U0C3gIqcd \
+                  qwMV6nl33GtHjyRdHx5fZcon21glUKIbE9P71NwQ=";
+
+var DecryptionResult = cryptico.decrypt(CipherText, MattsRSAkey);
+```
+
+The decrypted message is in `DecryptionResult.plaintext`.
+
+### Signatures & Public Key IDs
+    
+If Sam's RSA key is provided to the `cryptico.encrypt` function, the message will be signed by him:
+    
+```javascript
+var PassPhrase = "There Ain't No Such Thing As A Free Lunch."; 
+var SamsRSAkey = cryptico.generateRSAKey(PassPhrase, 1024);
+
+var PlainText = "Matt, I need you to help me with my Starcraft strategy.";
+
+var EncryptionResult = cryptico.encrypt(PlainText, MattsPublicKeyString, SamsRSAkey);
+```
+
+The public key associated with the signature can be used by Matt to make sure that it was sent by Sam, but there are a lot of characters to examine in the key - it would be easy to make a mistake.  Instead, the public key string associated with the signature can be processed like this:
+    
+```javascript
+var PublicKeyID = cryptico.publicKeyID(EncryptionResult.publickey);
+```
+
+and `PublicKeyID` would look something like this:
+    
+    d0bffb0c422dfa3d3d8502040b915248
+
+This shorter key ID can be used to uniquely identify Sam's public key more easily if it must be done manually.  Moreover, this key ID can be used by Sam or Matt to make sure they have typed their own passphrases correctly.
+    
 # API Documentation
 
 ## RSA Keys
