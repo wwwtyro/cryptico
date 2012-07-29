@@ -68,6 +68,7 @@ If Sam's RSA key is provided to the `cryptico.encrypt` function, the message wil
     
 ```javascript
 var PassPhrase = "There Ain't No Such Thing As A Free Lunch."; 
+
 var SamsRSAkey = cryptico.generateRSAKey(PassPhrase, 1024);
 
 var PlainText = "Matt, I need you to help me with my Starcraft strategy.";
