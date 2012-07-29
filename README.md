@@ -1,4 +1,4 @@
-# cryptico
+# cryptico.js
 
 ## Overview
 
