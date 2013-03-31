@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>Cryptico by wwwtyro</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>Cryptico</h1>
+        <h2>An easy-to-use encryption system utilizing RSA and AES for javascript.</h2>
+        <a href="https://github.com/wwwtyro/cryptico" class="button"><small>View project on</small>GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h2>Overview</h2>
+
+<h3>Generating an RSA key pair &amp; public key string</h3>
+
+<p>Sam wants to send Matt an encrypted message.  In order to do this, he first needs Matt's public key string.  A public key pair can be generated for Matt like this:</p>
+
+<div class="highlight"><pre><span class="c1">// The passphrase used to repeatably generate this RSA key.</span>
+<span class="kd">var</span> <span class="nx">PassPhrase</span> <span class="o">=</span> <span class="s2">"The Moon is a Harsh Mistress."</span><span class="p">;</span> 
+
+<span class="c1">// The length of the RSA key, in bits.</span>
+<span class="kd">var</span> <span class="nx">Bits</span> <span class="o">=</span> <span class="mi">1024</span><span class="p">;</span> 
+
+<span class="kd">var</span> <span class="nx">MattsRSAkey</span> <span class="o">=</span> <span class="nx">cryptico</span><span class="p">.</span><span class="nx">generateRSAKey</span><span class="p">(</span><span class="nx">PassPhrase</span><span class="p">,</span> <span class="nx">Bits</span><span class="p">);</span>
+</pre></div>
+
+<p>Matt's public key string can then be generated like this:</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">MattsPublicKeyString</span> <span class="o">=</span> <span class="nx">cryptico</span><span class="p">.</span><span class="nx">publicKeyString</span><span class="p">(</span><span class="nx">MattsRSAkey</span><span class="p">);</span>       
+</pre></div>
+
+<p>and looks like this:</p>
+
+<pre><code>uXjrkGqe5WuS7zsTg6Z9DuS8cXLFz38ue+xrFzxrcQJCXtVccCoUFP2qH/AQ
+4qMvxxvqkSYBpRm1R5a4/NdQ5ei8sE8gfZEq7dlcR+gOSv3nnS4/CX1n5Z5m
+8bvFPF0lSZnYQ23xlyjXTaNacmV0IuZbqWd4j9LfdAKq5dvDaoE=
+</code></pre>
+
+<h3>Encrypting a message</h3>
+
+<p>Matt emails Sam his public key string.  Now Sam can encrypt a message for Matt:</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">PlainText</span> <span class="o">=</span> <span class="s2">"Matt, I need you to help me with my Starcraft strategy."</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">EncryptionResult</span> <span class="o">=</span> <span class="nx">cryptico</span><span class="p">.</span><span class="nx">encrypt</span><span class="p">(</span><span class="nx">PlainText</span><span class="p">,</span> <span class="nx">MattsPublicKeyString</span><span class="p">);</span>
+</pre></div>
+
+<p><code>EncryptionResult.cipher</code> is the encrypted message, and looks like this:</p>
+
+<pre><code>OOHoAlfm6Viyl7afkUVRoYQv24AfdLnxaay5GjcqpxvEK+dph5kUFZEZIFKo
+vVoHoZbtUMekSbMqHQr3wNNpvcNWr4E3DgNLfMZQA1pCAUVmPjNM1ZQmrkKY
+HPKvkhmVKaBiYAJGoO/YiFfKnaylLpKOYJZctkZc4wflZcEEqqg=?cJPt71I
+HcU5c2LgqGXQKcx2BaAbm25Q2Ku94c933LX5MObL9qbTJEVEv29U0C3gIqcd
+qwMV6nl33GtHjyRdHx5fZcon21glUKIbE9P71NwQ=
+</code></pre>
+
+<h3>Decrypting a message</h3>
+
+<p>Sam sends his encrypted message to Matt. The message can be decrypted like this:</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">CipherText</span> <span class="o">=</span> <span class="s2">"OOHoAlfm6Viyl7afkUVRoYQv24AfdLnxaay5GjcqpxvEK+dph5kUFZEZIFKo \</span>
+<span class="s2">                  vVoHoZbtUMekSbMqHQr3wNNpvcNWr4E3DgNLfMZQA1pCAUVmPjNM1ZQmrkKY \</span>
+<span class="s2">                  HPKvkhmVKaBiYAJGoO/YiFfKnaylLpKOYJZctkZc4wflZcEEqqg=?cJPt71I \</span>
+<span class="s2">                  HcU5c2LgqGXQKcx2BaAbm25Q2Ku94c933LX5MObL9qbTJEVEv29U0C3gIqcd \</span>
+<span class="s2">                  qwMV6nl33GtHjyRdHx5fZcon21glUKIbE9P71NwQ="</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">DecryptionResult</span> <span class="o">=</span> <span class="nx">cryptico</span><span class="p">.</span><span class="nx">decrypt</span><span class="p">(</span><span class="nx">CipherText</span><span class="p">,</span> <span class="nx">MattsRSAkey</span><span class="p">);</span>
+</pre></div>
+
+<p>The decrypted message is in <code>DecryptionResult.plaintext</code>.</p>
+
+<h3>Signatures &amp; Public Key IDs</h3>
+
+<p>If Sam's RSA key is provided to the <code>cryptico.encrypt</code> function, the message will be signed by him:</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">PassPhrase</span> <span class="o">=</span> <span class="s2">"There Ain't No Such Thing As A Free Lunch."</span><span class="p">;</span> 
+
+<span class="kd">var</span> <span class="nx">SamsRSAkey</span> <span class="o">=</span> <span class="nx">cryptico</span><span class="p">.</span><span class="nx">generateRSAKey</span><span class="p">(</span><span class="nx">PassPhrase</span><span class="p">,</span> <span class="mi">1024</span><span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">PlainText</span> <span class="o">=</span> <span class="s2">"Matt, I need you to help me with my Starcraft strategy."</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">EncryptionResult</span> <span class="o">=</span> <span class="nx">cryptico</span><span class="p">.</span><span class="nx">encrypt</span><span class="p">(</span><span class="nx">PlainText</span><span class="p">,</span> <span class="nx">MattsPublicKeyString</span><span class="p">,</span> <span class="nx">SamsRSAkey</span><span class="p">);</span>
+</pre></div>
+
+<p>The public key associated with the signature can be used by Matt to make sure that it was sent by Sam, but there are a lot of characters to examine in the key - it would be easy to make a mistake.  Instead, the public key string associated with the signature can be processed like this:</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">PublicKeyID</span> <span class="o">=</span> <span class="nx">cryptico</span><span class="p">.</span><span class="nx">publicKeyID</span><span class="p">(</span><span class="nx">EncryptionResult</span><span class="p">.</span><span class="nx">publickey</span><span class="p">);</span>
+</pre></div>
+
+<p>and <code>PublicKeyID</code> would look something like this:</p>
+
+<pre><code>d0bffb0c422dfa3d3d8502040b915248
+</code></pre>
+
+<p>This shorter key ID can be used to uniquely identify Sam's public key more easily if it must be done manually.  Moreover, this key ID can be used by Sam or Matt to make sure they have typed their own passphrases correctly.</p>
+
+<h1>API Documentation</h1>
+
+<h2>RSA Keys</h2>
+
+<pre><code>cryptico.generateRSAKey(passphrase, bitlength)
+</code></pre>
+
+<p>Generates an RSAKey object from a password and bitlength.</p>
+
+<p><code>passphrase</code>: string from which the RSA key is generated.</p>
+
+<p><code>bitlength</code>: integer, length of the RSA key (512, 1024, 2048, 4096, 8192).</p>
+
+<p>Returns an <code>RSAKey</code> object.</p>
+
+<pre><code>cryptico.publicKeyString(rsakey)
+</code></pre>
+
+<p>Returns the public key portion of an RSAKey object in ascii-armored
+string form, which allows it to be used on websites and in text files
+without fear of corrupting the public key.</p>
+
+<p><code>rsakey</code>: An <code>RSAKey</code> object.</p>
+
+<p>Returns an ascii-armored public key string.</p>
+
+<pre><code>cryptico.publicKeyID(publicKeyString)
+</code></pre>
+
+<p>Returns an MD5 sum of a <code>publicKeyString</code> for easier identification.</p>
+
+<p><code>publicKeyString</code>: a public key in ascii-armored string form, as generated by the <code>cryptico.publicKeyString</code> function.</p>
+
+<p>Returns an MD5 sum of the public key string.   </p>
+
+<h2>Encryption</h2>
+
+<pre><code>cryptico.encrypt(plaintext, publicKeyString, signingKey)
+</code></pre>
+
+<p>Encrypts a string with the provided public key. Optionally signs the encrypted string with an RSAKey object.</p>
+
+<p><code>plaintext</code>: the string to be encrypted.</p>
+
+<p><code>publicKeyString</code>: The public key string of the recipient.</p>
+
+<p><code>signingKey</code>: the <code>RSAKey</code> object of the sender.</p>
+
+<p>Returns: <code>status</code>, <code>cipher</code></p>
+
+<p><code>status</code>: "success" if encryption succeeded, "failure" if it failed.</p>
+
+<p><code>cipher</code>: An ascii-armored encrypted message string, optionally signed.</p>
+
+<h2>Decryption</h2>
+
+<pre><code>cryptico.decrypt(ciphertext, key)
+</code></pre>
+
+<p>Decrypts an encrypted message with the recipient's RSAKey and verifies the signature, if any.</p>
+
+<p><code>ciphertext</code>: The encrypted message to be decrypted.</p>
+
+<p><code>key</code>: The <code>RSAKey</code> object of the recipient.</p>
+
+<p>Returns: <code>status</code>, <code>plaintext</code>, <code>signature</code>, <code>publicKeyString</code></p>
+
+<p><code>status</code>: "success" if decryption succeeded, "failure" if it failed. <strong>Does not reflect the status of the signature verification.</strong></p>
+
+<p><code>plaintext</code>: The decrypted message.</p>
+
+<p><code>signature</code>: "unsigned" if there was no signature, "verified" if it is signed and valid, <strong>"forged" if the signature fails verification</strong>.</p>
+
+<p><code>publicKeyString</code>: public key string of the signature (presumably the sender). <strong>Returned even if the signature appears to be forged</strong>.</p>
+
+<h1>Encryption Technical Documentation</h1>
+
+<h2>Key generation</h2>
+
+<p>A hash is generated of the user's passphrase using the SHA256 algorithm found at <a href="http://www.webtoolkit.info/javascript-sha256.html">webtoolkit.info</a>. This hash is used to seed <a href="http://davidbau.com/archives/2010/01/30/random_seeds_coded_hints_and_quintillions.html">David Bau's seedable random number generator</a>. A (seeded) random RSA key is generated with <a href="http://www-cs-students.stanford.edu/~tjw/jsbn/">Tom Wu's RSA key generator</a> with 3 as a hard-coded public exponent.</p>
+
+<h2>Encryption</h2>
+
+<p>A 32-byte AES key is generated with <a href="http://www-cs-students.stanford.edu/~tjw/jsbn/">Tom Wu's random number generator</a>. The plaintext message is converted to a byte string and padded with zeros to 16 bytes round.  An initialization vector is created with <a href="http://www-cs-students.stanford.edu/~tjw/jsbn/">Tom Wu's random number generator</a>. The AES key is expanded and the plaintext message is encrypted with the Cipher-block chaining mode using the <a href="http://point-at-infinity.org/jsaes/">jsaes</a> library. The AES key is encrypted with the recipient's public key using <a href="http://www-cs-students.stanford.edu/~tjw/jsbn/">Tom Wu's RSA encryption library</a>.</p>
+
+<p>The encrypted AES key and encrypted message are ascii-armored and concatenated with the "?" character as a delimiter.  As an example, here is the result of the phrase "Matt, I need you to help me with my Starcraft strategy." encrypted with
+the passphrase "The Moon is a Harsh Mistress." used to generate the 1024-bit public key:</p>
+
+<pre><code>EuvU2Ov3gpgM9B1I3VzEgxaAVO/Iy85NARUFZb/h+HrOP72degP0L1fWiHO3
+RDm5+kWRaV6oZsn91juJ0L+hrP6BDwlIza9x9DBMEsg3PnOHJENG63RXbu0q
+PZd2xDJY70i44sufNqHZ0mui9OdNIeE8FvzEOzMtFGCqDx1Z48s=?K3lOtQC
+2w+emoR4W3yvAaslSzTj/ZZIkOu3MNTW8y/OX0OxTKfpsaI6zX6XYrM0MpPr
+uw7on1N6VUMpNQO8KUVYl4clquaibKs0marXPFH4=
+</code></pre>
+
+<h2>Signing</h2>
+
+<p>When signing the encrypted message, two more pieces of information are attached to the cipher text.  The first is the ascii-armored RSA public key of the sender. The second piece of information concatenated with the cipher text is
+the signature itself, which is generated with the <a href="http://www9.atwiki.jp/kurushima/pub/jsrsa/">rsa-sign extension by Kenji Urushima</a>, along with the SHA256 algorithm found at <a href="http://www.webtoolkit.info/javascript-sha256.html">webtoolkit.info</a>. These two pieces of code are also used when verifying the signature.</p>
+
+<p>The signature is concatenated with the public key with the string
+<code>::52cee64bb3a38f6403386519a39ac91c::</code> used as the delimiter between the
+plaintext, the public key of the sender, and the signature:</p>
+
+<pre><code>plaintext
+::52cee64bb3a38f6403386519a39ac91c::
+public key of sender
+::52cee64bb3a38f6403386519a39ac91c::
+signature
+</code></pre>
+
+<p>This concatenated block is then encrypted with CBC AES and concatenated with the
+encrypted AES key to form the complete encrypted message.</p>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/wwwtyro/cryptico/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/wwwtyro/cryptico/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/wwwtyro/cryptico"></a> is maintained by <a href="https://github.com/wwwtyro">wwwtyro</a>.</p>
+
+          <p>This page was generated by <a href="pages.github.com">GitHub Pages</a> using the Architect theme by <a href="http://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+  
+  </body>
+</html>
