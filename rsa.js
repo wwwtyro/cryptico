@@ -121,6 +121,29 @@ function RSAEncrypt(text)
     else return "0" + h;
 }
 
+function RSAToJSON()
+{
+    return {
+        coeff: this.coeff.toString(16),
+        d: this.d.toString(16),
+        dmp1: this.dmp1.toString(16),
+        dmq1: this.dmq1.toString(16),
+        e: this.e.toString(16),
+        n: this.n.toString(16),
+        p: this.p.toString(16),
+        q: this.q.toString(16),
+    }
+}
+
+function RSAParse(rsaString) {
+    var json = JSON.parse(rsaString);
+    var rsa = new RSAKey();
+
+    rsa.setPrivateEx(json.n, json.e, json.d, json.p, json.q, json.dmp1, json.dmq1, json.coeff);
+
+    return rsa;
+}
+
 // Return the PKCS#1 RSA encryption of "text" as a Base64-encoded string
 //function RSAEncryptB64(text) {
 //  var h = this.encrypt(text);
@@ -132,6 +155,8 @@ RSAKey.prototype.doPublic = RSADoPublic;
 // public
 RSAKey.prototype.setPublic = RSASetPublic;
 RSAKey.prototype.encrypt = RSAEncrypt;
+RSAKey.prototype.toJSON = RSAToJSON;
+RSAKey.parse = RSAParse;
 
 // Version 1.1: support utf-8 decoding in pkcs1unpad2
 // Undo PKCS#1 (type 2, random) padding and, if valid, return the plaintext
