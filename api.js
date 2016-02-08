@@ -202,7 +202,7 @@ var cryptico = (function() {
     // AES CBC Encryption.
     my.encryptAESCBC = function(plaintext, key)
     {
-        var exkey = key.slice(0);
+        var exkey = my.string2bytes(key);
         aes.ExpandKey(exkey);
         var blocks = my.string2bytes(plaintext);
         blocks = my.pad16(blocks);
@@ -222,7 +222,7 @@ var cryptico = (function() {
     // AES CBC Decryption.
     my.decryptAESCBC = function(encryptedText, key)
     {
-        var exkey = key.slice(0);
+        var exkey = my.string2bytes(key);
         aes.ExpandKey(exkey);
         var encryptedText = my.b64to256(encryptedText);
         var encryptedBlocks = my.string2bytes(encryptedText);
