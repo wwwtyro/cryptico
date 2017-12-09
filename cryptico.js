@@ -3316,10 +3316,10 @@ var cryptico = (function() {
     // Converts a string to a byte array.
     my.string2bytes = function(string)
     {
-        var bytes = new Array();
+        var bytes = new Array(string.length);
         for(var i = 0; i < string.length; i++) 
         {
-            bytes.push(string.charCodeAt(i));
+            bytes[i] = string.charCodeAt(i);
         }
         return bytes;
     }
