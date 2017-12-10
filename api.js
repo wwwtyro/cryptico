@@ -154,6 +154,33 @@ var cryptico = (function() {
         }   
         return string;
     }
+
+    // Converts a utf8 string to ascii string.
+    my.utf82string = function(string)
+    {
+        return unescape(encodeURIComponent(string));
+    }
+
+    // Converts ascii string to a utf8 string.
+    my.string2utf8 = function(uriencoded)
+    {
+        return decodeURIComponent(escape(uriencoded));
+    }
+
+    // Converts a utf8 string to a byte array.
+    my.utf82bytes = function(string)
+    {
+        var uriencoded = unescape(encodeURIComponent(string));
+        return my.string2bytes(uriencoded);
+    }
+
+    // Converts a byte array to a utf8 string.
+    my.bytes2utf8 = function(bytes)
+    {
+        var uriencoded = my.bytes2string(bytes);
+        var string = decodeURIComponent(escape(uriencoded));
+        return string;
+    }
     
     // Returns a XOR b, where a and b are 16-byte byte arrays.
     my.blockXOR = function(a, b)
@@ -199,7 +226,7 @@ var cryptico = (function() {
         return newBytes;
     }
     
-    // AES CBC Encryption.
+    // AES CBC Encryption for ascii string.
     my.encryptAESCBC = function(plaintext, key)
     {
         var exkey = key.slice(0);
@@ -219,7 +246,14 @@ var cryptico = (function() {
         return my.b256to64(ciphertext)
     }
 
-    // AES CBC Decryption.
+    // AES CBC Encryption for utf8 string.
+    my.encryptUTF8AESCBC = function(plaintext, key)
+    {
+        var string = my.utf82string(plaintext);
+        return my.encryptAESCBC(string, key);
+    }
+
+    // AES CBC Decryption for ascii string.
     my.decryptAESCBC = function(encryptedText, key)
     {
         var exkey = key.slice(0);
@@ -237,6 +271,13 @@ var cryptico = (function() {
         }
         decryptedBlocks = my.depad(decryptedBlocks);
         return my.bytes2string(decryptedBlocks);
+    }
+
+    // AES CBC Decryption for utf8 string.
+    my.decryptUTF8AESCBC = function(encryptedText, key)
+    {
+        var string = my.decryptAESCBC(encryptedText, key);
+        return my.string2utf8(string);
     }
     
     // Wraps a string to 60 characters.
