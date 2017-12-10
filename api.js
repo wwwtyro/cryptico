@@ -154,6 +154,33 @@ var cryptico = (function() {
         }   
         return string;
     }
+
+    // Converts a utf8 string to ascii string.
+    my.utf82string = function(string)
+    {
+        return unescape(encodeURIComponent(string));
+    }
+
+    // Converts ascii string to a utf8 string.
+    my.string2utf8 = function(uriencoded)
+    {
+        return decodeURIComponent(escape(uriencoded));
+    }
+
+    // Converts a utf8 string to a byte array.
+    my.utf82bytes = function(string)
+    {
+        var uriencoded = unescape(encodeURIComponent(string));
+        return my.string2bytes(uriencoded);
+    }
+
+    // Converts a byte array to a utf8 string.
+    my.bytes2utf8 = function(bytes)
+    {
+        var uriencoded = my.bytes2string(bytes);
+        var string = decodeURIComponent(escape(uriencoded));
+        return string;
+    }
     
     // Returns a XOR b, where a and b are 16-byte byte arrays.
     my.blockXOR = function(a, b)
