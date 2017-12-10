@@ -226,7 +226,7 @@ var cryptico = (function() {
         return newBytes;
     }
     
-    // AES CBC Encryption.
+    // AES CBC Encryption for ascii string.
     my.encryptAESCBC = function(plaintext, key)
     {
         var exkey = key.slice(0);
@@ -246,7 +246,14 @@ var cryptico = (function() {
         return my.b256to64(ciphertext)
     }
 
-    // AES CBC Decryption.
+    // AES CBC Encryption for utf8 string.
+    my.encryptUTF8AESCBC = function(plaintext, key)
+    {
+        var string = my.utf82string(plaintext);
+        return my.encryptAESCBC(string, key);
+    }
+
+    // AES CBC Decryption for ascii string.
     my.decryptAESCBC = function(encryptedText, key)
     {
         var exkey = key.slice(0);
@@ -264,6 +271,13 @@ var cryptico = (function() {
         }
         decryptedBlocks = my.depad(decryptedBlocks);
         return my.bytes2string(decryptedBlocks);
+    }
+
+    // AES CBC Decryption for utf8 string.
+    my.decryptUTF8AESCBC = function(encryptedText, key)
+    {
+        var string = my.decryptAESCBC(encryptedText, key);
+        return my.string2utf8(string);
     }
     
     // Wraps a string to 60 characters.
