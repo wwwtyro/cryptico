@@ -3361,7 +3361,7 @@ var cryptico = (function() {
     {
         var newBytes = bytes.slice(0);
         var padding = (16 - (bytes.length % 16)) % 16;
-        for(i = bytes.length; i < bytes.length + padding; i++)
+        for(var i = bytes.length; i < bytes.length + padding; i++)
         {
             newBytes.push(0);
         }
