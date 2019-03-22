@@ -174,7 +174,7 @@ function bnpFromString(s, b) {
         }
         else this[this.t - 1] |= x << sh;
         sh += k;
-        if (sh >= this.DB) sh -= this.DB;
+        if (sh >= this.DB) sh -= this.DB;:
     }
     if (k == 8 && (s[0] & 0x80) != 0) {
         this.s = -1;
@@ -3361,7 +3361,8 @@ var cryptico = (function() {
     {
         var newBytes = bytes.slice(0);
         var padding = (16 - (bytes.length % 16)) % 16;
-        for(var i = bytes.length; i < bytes.length + padding; i++)
+    	var i;
+        for(i = bytes.length; i < bytes.length + padding; i++)
         {
             newBytes.push(0);
         }
