@@ -3,9 +3,15 @@
 // See "LICENSE" for details.
 // Basic JavaScript BN library - subset useful for RSA encryption.
 
+(function (global, factory) {
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+  typeof define === 'function' && define.amd ? define(factory) :
+  (global.Ziz = factory());
+}(this, (function () { 'use strict';
+
 // Bits per digit
 var dbits;
-
+var navigator;
 // JavaScript engine analysis
 var canary = 0xdeadbeefcafe;
 var j_lm = ((canary & 0xffffff) == 0xefcafe);
@@ -73,11 +79,11 @@ function am3(i, x, w, j, c, n) {
     }
     return c;
 }
-if (j_lm && (navigator.appName == "Microsoft Internet Explorer")) {
+if (j_lm && navigator && (navigator.appName == "Microsoft Internet Explorer")) {
     BigInteger.prototype.am = am2;
     dbits = 30;
 }
-else if (j_lm && (navigator.appName != "Netscape")) {
+else if (j_lm && navigator && (navigator.appName != "Netscape")) {
     BigInteger.prototype.am = am1;
     dbits = 26;
 }
@@ -174,7 +180,7 @@ function bnpFromString(s, b) {
         }
         else this[this.t - 1] |= x << sh;
         sh += k;
-        if (sh >= this.DB) sh -= this.DB;:
+        if (sh >= this.DB) sh -= this.DB;
     }
     if (k == 8 && (s[0] & 0x80) != 0) {
         this.s = -1;
@@ -1650,18 +1656,18 @@ BigInteger.prototype.square = bnSquare;
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
-// 
+//
 //   1. Redistributions of source code must retain the above copyright
 //      notice, this list of conditions and the following disclaimer.
 //
 //   2. Redistributions in binary form must reproduce the above copyright
 //      notice, this list of conditions and the following disclaimer in the
 //      documentation and/or other materials provided with the distribution.
-// 
+//
 //   3. Neither the name of this module nor the names of its contributors may
 //      be used to endorse or promote products derived from this software
 //      without specific prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 // "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 // LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -1677,7 +1683,7 @@ BigInteger.prototype.square = bnSquare;
 /**
  * All code is in an anonymous closure to keep the global namespace clean.
  *
- * @param {number=} overflow 
+ * @param {number=} overflow
  * @param {number=} startdenom
  */
 (function (pool, math, width, chunks, significance, overflow, startdenom)
@@ -1805,7 +1811,7 @@ BigInteger.prototype.square = bnSquare;
     // flatten()
     // Converts an object tree to nested arrays of strings.
     //
-    /** @param {Object=} result 
+    /** @param {Object=} result
      * @param {string=} prop
      * @param {string=} typ */
 
@@ -1836,7 +1842,7 @@ BigInteger.prototype.square = bnSquare;
     // Mixes a string seed into a key that is an array of integers, and
     // returns a shortened string seed that is equivalent to the result key.
     //
-    /** @param {number=} smear 
+    /** @param {number=} smear
      * @param {number=} j */
 
     function mixkey(seed, key, smear, j)
@@ -1892,7 +1898,7 @@ Math, // math: package containing random, pow, and seedrandom
 
 
 // This is not really a random number generator object, and two SeededRandom
-// objects will conflict with one another, but it's good enough for generating 
+// objects will conflict with one another, but it's good enough for generating
 // the rsa key.
 function SeededRandom(){}
 
@@ -1982,12 +1988,12 @@ if(rng_pool == null) {
   rng_pool = new Array();
   rng_pptr = 0;
   var t;
-  if(navigator.appName == "Netscape" && navigator.appVersion < "5" && window.crypto) {
+  if(navigator && navigator.appName == "Netscape" && navigator.appVersion < "5" && window.crypto) {
     // Extract entropy (256 bits) from NS4 RNG if available
     var z = window.crypto.random(32);
     for(t = 0; t < z.length; ++t)
       rng_pool[rng_pptr++] = z.charCodeAt(t) & 255;
-  }  
+  }
   while(rng_pptr < rng_psize) {  // extract some randomness from Math.random()
     t = Math.floor(65536 * Math.random());
     rng_pool[rng_pptr++] = t >>> 8;
@@ -2036,18 +2042,18 @@ SecureRandom.prototype.nextBytes = rng_get_bytes;
 *  Original code by Angel Marin, Paul Johnston.
 *
 **/
- 
+
 function SHA256(s){
- 
+
 	var chrsz   = 8;
 	var hexcase = 0;
- 
+
 	function safe_add (x, y) {
 		var lsw = (x & 0xFFFF) + (y & 0xFFFF);
 		var msw = (x >> 16) + (y >> 16) + (lsw >> 16);
 		return (msw << 16) | (lsw & 0xFFFF);
 	}
- 
+
 	function S (X, n) { return ( X >>> n ) | (X << (32 - n)); }
 	function R (X, n) { return ( X >>> n ); }
 	function Ch(x, y, z) { return ((x & y) ^ ((~x) & z)); }
@@ -2056,17 +2062,17 @@ function SHA256(s){
 	function Sigma1256(x) { return (S(x, 6) ^ S(x, 11) ^ S(x, 25)); }
 	function Gamma0256(x) { return (S(x, 7) ^ S(x, 18) ^ R(x, 3)); }
 	function Gamma1256(x) { return (S(x, 17) ^ S(x, 19) ^ R(x, 10)); }
- 
+
 	function core_sha256 (m, l) {
 		var K = new Array(0x428A2F98, 0x71374491, 0xB5C0FBCF, 0xE9B5DBA5, 0x3956C25B, 0x59F111F1, 0x923F82A4, 0xAB1C5ED5, 0xD807AA98, 0x12835B01, 0x243185BE, 0x550C7DC3, 0x72BE5D74, 0x80DEB1FE, 0x9BDC06A7, 0xC19BF174, 0xE49B69C1, 0xEFBE4786, 0xFC19DC6, 0x240CA1CC, 0x2DE92C6F, 0x4A7484AA, 0x5CB0A9DC, 0x76F988DA, 0x983E5152, 0xA831C66D, 0xB00327C8, 0xBF597FC7, 0xC6E00BF3, 0xD5A79147, 0x6CA6351, 0x14292967, 0x27B70A85, 0x2E1B2138, 0x4D2C6DFC, 0x53380D13, 0x650A7354, 0x766A0ABB, 0x81C2C92E, 0x92722C85, 0xA2BFE8A1, 0xA81A664B, 0xC24B8B70, 0xC76C51A3, 0xD192E819, 0xD6990624, 0xF40E3585, 0x106AA070, 0x19A4C116, 0x1E376C08, 0x2748774C, 0x34B0BCB5, 0x391C0CB3, 0x4ED8AA4A, 0x5B9CCA4F, 0x682E6FF3, 0x748F82EE, 0x78A5636F, 0x84C87814, 0x8CC70208, 0x90BEFFFA, 0xA4506CEB, 0xBEF9A3F7, 0xC67178F2);
 		var HASH = new Array(0x6A09E667, 0xBB67AE85, 0x3C6EF372, 0xA54FF53A, 0x510E527F, 0x9B05688C, 0x1F83D9AB, 0x5BE0CD19);
 		var W = new Array(64);
 		var a, b, c, d, e, f, g, h, i, j;
 		var T1, T2;
- 
+
 		m[l >> 5] |= 0x80 << (24 - l % 32);
 		m[((l + 64 >> 9) << 4) + 15] = l;
- 
+
 		for ( var i = 0; i<m.length; i+=16 ) {
 			a = HASH[0];
 			b = HASH[1];
@@ -2076,14 +2082,14 @@ function SHA256(s){
 			f = HASH[5];
 			g = HASH[6];
 			h = HASH[7];
- 
+
 			for ( var j = 0; j<64; j++) {
 				if (j < 16) W[j] = m[j + i];
 				else W[j] = safe_add(safe_add(safe_add(Gamma1256(W[j - 2]), W[j - 7]), Gamma0256(W[j - 15])), W[j - 16]);
- 
+
 				T1 = safe_add(safe_add(safe_add(safe_add(h, Sigma1256(e)), Ch(e, f, g)), K[j]), W[j]);
 				T2 = safe_add(Sigma0256(a), Maj(a, b, c));
- 
+
 				h = g;
 				g = f;
 				f = e;
@@ -2093,7 +2099,7 @@ function SHA256(s){
 				b = a;
 				a = safe_add(T1, T2);
 			}
- 
+
 			HASH[0] = safe_add(a, HASH[0]);
 			HASH[1] = safe_add(b, HASH[1]);
 			HASH[2] = safe_add(c, HASH[2]);
@@ -2105,7 +2111,7 @@ function SHA256(s){
 		}
 		return HASH;
 	}
- 
+
 	function str2binb (str) {
 		var bin = Array();
 		var mask = (1 << chrsz) - 1;
@@ -2114,15 +2120,15 @@ function SHA256(s){
 		}
 		return bin;
 	}
- 
+
 	function Utf8Encode(string) {
 		string = string.replace(/\r\n/g,"\n");
 		var utftext = "";
- 
+
 		for (var n = 0; n < string.length; n++) {
- 
+
 			var c = string.charCodeAt(n);
- 
+
 			if (c < 128) {
 				utftext += String.fromCharCode(c);
 			}
@@ -2135,12 +2141,12 @@ function SHA256(s){
 				utftext += String.fromCharCode(((c >> 6) & 63) | 128);
 				utftext += String.fromCharCode((c & 63) | 128);
 			}
- 
+
 		}
- 
+
 		return utftext;
 	}
- 
+
 	function binb2hex (binarray) {
 		var hex_tab = hexcase ? "0123456789ABCDEF" : "0123456789abcdef";
 		var str = "";
@@ -2150,7 +2156,7 @@ function SHA256(s){
 		}
 		return str;
 	}
- 
+
 	s = Utf8Encode(s);
 	return binb2hex(core_sha256(str2binb(s), s.length * chrsz));
 }
@@ -2167,20 +2173,20 @@ sha256.hex = function(s)
 *  http://www.webtoolkit.info/
 *
 **/
- 
+
 function SHA1 (msg) {
- 
+
 	function rotate_left(n,s) {
 		var t4 = ( n<<s ) | (n>>>(32-s));
 		return t4;
 	};
- 
+
 	function lsb_hex(val) {
 		var str="";
 		var i;
 		var vh;
 		var vl;
- 
+
 		for( i=0; i<=6; i+=2 ) {
 			vh = (val>>>(i*4+4))&0x0f;
 			vl = (val>>>(i*4))&0x0f;
@@ -2188,28 +2194,28 @@ function SHA1 (msg) {
 		}
 		return str;
 	};
- 
+
 	function cvt_hex(val) {
 		var str="";
 		var i;
 		var v;
- 
+
 		for( i=7; i>=0; i-- ) {
 			v = (val>>>(i*4))&0x0f;
 			str += v.toString(16);
 		}
 		return str;
 	};
- 
- 
+
+
 	function Utf8Encode(string) {
 		string = string.replace(/\r\n/g,"\n");
 		var utftext = "";
- 
+
 		for (var n = 0; n < string.length; n++) {
- 
+
 			var c = string.charCodeAt(n);
- 
+
 			if (c < 128) {
 				utftext += String.fromCharCode(c);
 			}
@@ -2222,12 +2228,12 @@ function SHA1 (msg) {
 				utftext += String.fromCharCode(((c >> 6) & 63) | 128);
 				utftext += String.fromCharCode((c & 63) | 128);
 			}
- 
+
 		}
- 
+
 		return utftext;
 	};
- 
+
 	var blockstart;
 	var i, j;
 	var W = new Array(80);
@@ -2238,18 +2244,18 @@ function SHA1 (msg) {
 	var H4 = 0xC3D2E1F0;
 	var A, B, C, D, E;
 	var temp;
- 
+
 	msg = Utf8Encode(msg);
- 
+
 	var msg_len = msg.length;
- 
+
 	var word_array = new Array();
 	for( i=0; i<msg_len-3; i+=4 ) {
 		j = msg.charCodeAt(i)<<24 | msg.charCodeAt(i+1)<<16 |
 		msg.charCodeAt(i+2)<<8 | msg.charCodeAt(i+3);
 		word_array.push( j );
 	}
- 
+
 	switch( msg_len % 4 ) {
 		case 0:
 			i = 0x080000000;
@@ -2257,35 +2263,35 @@ function SHA1 (msg) {
 		case 1:
 			i = msg.charCodeAt(msg_len-1)<<24 | 0x0800000;
 		break;
- 
+
 		case 2:
 			i = msg.charCodeAt(msg_len-2)<<24 | msg.charCodeAt(msg_len-1)<<16 | 0x08000;
 		break;
- 
+
 		case 3:
 			i = msg.charCodeAt(msg_len-3)<<24 | msg.charCodeAt(msg_len-2)<<16 | msg.charCodeAt(msg_len-1)<<8	| 0x80;
 		break;
 	}
- 
+
 	word_array.push( i );
- 
+
 	while( (word_array.length % 16) != 14 ) word_array.push( 0 );
- 
+
 	word_array.push( msg_len>>>29 );
 	word_array.push( (msg_len<<3)&0x0ffffffff );
- 
- 
+
+
 	for ( blockstart=0; blockstart<word_array.length; blockstart+=16 ) {
- 
+
 		for( i=0; i<16; i++ ) W[i] = word_array[blockstart+i];
 		for( i=16; i<=79; i++ ) W[i] = rotate_left(W[i-3] ^ W[i-8] ^ W[i-14] ^ W[i-16], 1);
- 
+
 		A = H0;
 		B = H1;
 		C = H2;
 		D = H3;
 		E = H4;
- 
+
 		for( i= 0; i<=19; i++ ) {
 			temp = (rotate_left(A,5) + ((B&C) | (~B&D)) + E + W[i] + 0x5A827999) & 0x0ffffffff;
 			E = D;
@@ -2294,7 +2300,7 @@ function SHA1 (msg) {
 			B = A;
 			A = temp;
 		}
- 
+
 		for( i=20; i<=39; i++ ) {
 			temp = (rotate_left(A,5) + (B ^ C ^ D) + E + W[i] + 0x6ED9EBA1) & 0x0ffffffff;
 			E = D;
@@ -2303,7 +2309,7 @@ function SHA1 (msg) {
 			B = A;
 			A = temp;
 		}
- 
+
 		for( i=40; i<=59; i++ ) {
 			temp = (rotate_left(A,5) + ((B&C) | (B&D) | (C&D)) + E + W[i] + 0x8F1BBCDC) & 0x0ffffffff;
 			E = D;
@@ -2312,7 +2318,7 @@ function SHA1 (msg) {
 			B = A;
 			A = temp;
 		}
- 
+
 		for( i=60; i<=79; i++ ) {
 			temp = (rotate_left(A,5) + (B ^ C ^ D) + E + W[i] + 0xCA62C1D6) & 0x0ffffffff;
 			E = D;
@@ -2321,19 +2327,19 @@ function SHA1 (msg) {
 			B = A;
 			A = temp;
 		}
- 
+
 		H0 = (H0 + A) & 0x0ffffffff;
 		H1 = (H1 + B) & 0x0ffffffff;
 		H2 = (H2 + C) & 0x0ffffffff;
 		H3 = (H3 + D) & 0x0ffffffff;
 		H4 = (H4 + E) & 0x0ffffffff;
- 
+
 	}
- 
+
 	var temp = cvt_hex(H0) + cvt_hex(H1) + cvt_hex(H2) + cvt_hex(H3) + cvt_hex(H4);
- 
+
 	return temp.toLowerCase();
- 
+
 }
 
 var sha1 = {}
@@ -2348,13 +2354,13 @@ sha1.hex = function(s)
 *  http://www.webtoolkit.info/
 *
 **/
- 
+
 var MD5 = function (string) {
- 
+
 	function RotateLeft(lValue, iShiftBits) {
 		return (lValue<<iShiftBits) | (lValue>>>(32-iShiftBits));
 	}
- 
+
 	function AddUnsigned(lX,lY) {
 		var lX4,lY4,lX8,lY8,lResult;
 		lX8 = (lX & 0x80000000);
@@ -2375,32 +2381,32 @@ var MD5 = function (string) {
 			return (lResult ^ lX8 ^ lY8);
 		}
  	}
- 
+
  	function F(x,y,z) { return (x & y) | ((~x) & z); }
  	function G(x,y,z) { return (x & z) | (y & (~z)); }
  	function H(x,y,z) { return (x ^ y ^ z); }
 	function I(x,y,z) { return (y ^ (x | (~z))); }
- 
+
 	function FF(a,b,c,d,x,s,ac) {
 		a = AddUnsigned(a, AddUnsigned(AddUnsigned(F(b, c, d), x), ac));
 		return AddUnsigned(RotateLeft(a, s), b);
 	};
- 
+
 	function GG(a,b,c,d,x,s,ac) {
 		a = AddUnsigned(a, AddUnsigned(AddUnsigned(G(b, c, d), x), ac));
 		return AddUnsigned(RotateLeft(a, s), b);
 	};
- 
+
 	function HH(a,b,c,d,x,s,ac) {
 		a = AddUnsigned(a, AddUnsigned(AddUnsigned(H(b, c, d), x), ac));
 		return AddUnsigned(RotateLeft(a, s), b);
 	};
- 
+
 	function II(a,b,c,d,x,s,ac) {
 		a = AddUnsigned(a, AddUnsigned(AddUnsigned(I(b, c, d), x), ac));
 		return AddUnsigned(RotateLeft(a, s), b);
 	};
- 
+
 	function ConvertToWordArray(string) {
 		var lWordCount;
 		var lMessageLength = string.length;
@@ -2423,7 +2429,7 @@ var MD5 = function (string) {
 		lWordArray[lNumberOfWords-1] = lMessageLength>>>29;
 		return lWordArray;
 	};
- 
+
 	function WordToHex(lValue) {
 		var WordToHexValue="",WordToHexValue_temp="",lByte,lCount;
 		for (lCount = 0;lCount<=3;lCount++) {
@@ -2433,15 +2439,15 @@ var MD5 = function (string) {
 		}
 		return WordToHexValue;
 	};
- 
+
 	function Utf8Encode(string) {
 		string = string.replace(/\r\n/g,"\n");
 		var utftext = "";
- 
+
 		for (var n = 0; n < string.length; n++) {
- 
+
 			var c = string.charCodeAt(n);
- 
+
 			if (c < 128) {
 				utftext += String.fromCharCode(c);
 			}
@@ -2454,25 +2460,25 @@ var MD5 = function (string) {
 				utftext += String.fromCharCode(((c >> 6) & 63) | 128);
 				utftext += String.fromCharCode((c & 63) | 128);
 			}
- 
+
 		}
- 
+
 		return utftext;
 	};
- 
+
 	var x=Array();
 	var k,AA,BB,CC,DD,a,b,c,d;
 	var S11=7, S12=12, S13=17, S14=22;
 	var S21=5, S22=9 , S23=14, S24=20;
 	var S31=4, S32=11, S33=16, S34=23;
 	var S41=6, S42=10, S43=15, S44=21;
- 
+
 	string = Utf8Encode(string);
- 
+
 	x = ConvertToWordArray(string);
- 
+
 	a = 0x67452301; b = 0xEFCDAB89; c = 0x98BADCFE; d = 0x10325476;
- 
+
 	for (k=0;k<x.length;k+=16) {
 		AA=a; BB=b; CC=c; DD=d;
 		a=FF(a,b,c,d,x[k+0], S11,0xD76AA478);
@@ -2544,9 +2550,9 @@ var MD5 = function (string) {
 		c=AddUnsigned(c,CC);
 		d=AddUnsigned(d,DD);
 	}
- 
+
 	var temp = WordToHex(a)+WordToHex(b)+WordToHex(c)+WordToHex(d);
- 
+
 	return temp.toLowerCase();
 }
 
@@ -2843,7 +2849,7 @@ RSAKey.prototype.decrypt = RSADecrypt;
 // This software is licensed under the terms of the MIT License.
 // http://www.opensource.org/licenses/mit-license.php
 //
-// The above copyright and license notice shall be 
+// The above copyright and license notice shall be
 // included in all copies or substantial portions of the Software.
 //
 // Depends on:
@@ -3039,9 +3045,9 @@ RSAKey.prototype.verifyHexSignatureForMessage = _rsasign_verifyHexSignatureForMe
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307 USA
  */
- 
+
  // later modifications by wwwtyro@github
- 
+
 var aes = (function () {
 
     var my = {};
@@ -3228,7 +3234,7 @@ var cryptico = (function() {
         return r;
     }
 
-    my.b64to256 = function(t) 
+    my.b64to256 = function(t)
     {
         var c, n;
         var r = '', s = 0, a = 0;
@@ -3244,7 +3250,7 @@ var cryptico = (function() {
             }
         }
         return r;
-    }    
+    }
 
     my.b16to64 = function(h) {
         var i;
@@ -3278,6 +3284,7 @@ var cryptico = (function() {
         var i;
         var k = 0;
         var slop;
+        var v;
         for (i = 0; i < s.length; ++i)
         {
             if (s.charAt(i) == "=") break;
@@ -3312,12 +3319,12 @@ var cryptico = (function() {
         if (k == 1) ret += int2char(slop << 2);
         return ret;
     }
-    
+
     // Converts a string to a byte array.
     my.string2bytes = function(string)
     {
         var bytes = new Array();
-        for(var i = 0; i < string.length; i++) 
+        for(var i = 0; i < string.length; i++)
         {
             bytes.push(string.charCodeAt(i));
         }
@@ -3331,10 +3338,10 @@ var cryptico = (function() {
         for(var i = 0; i < bytes.length; i++)
         {
             string += String.fromCharCode(bytes[i]);
-        }   
+        }
         return string;
     }
-    
+
     // Returns a XOR b, where a and b are 16-byte byte arrays.
     my.blockXOR = function(a, b)
     {
@@ -3345,7 +3352,7 @@ var cryptico = (function() {
         }
         return xor;
     }
-    
+
     // Returns a 16-byte initialization vector.
     my.blockIV = function()
     {
@@ -3354,21 +3361,21 @@ var cryptico = (function() {
         r.nextBytes(IV);
         return IV;
     }
-    
+
     // Returns a copy of bytes with zeros appended to the end
     // so that the (length of bytes) % 16 == 0.
     my.pad16 = function(bytes)
     {
         var newBytes = bytes.slice(0);
         var padding = (16 - (bytes.length % 16)) % 16;
-    	var i;
+        var i;
         for(i = bytes.length; i < bytes.length + padding; i++)
         {
             newBytes.push(0);
         }
         return newBytes;
     }
-    
+
     // Removes trailing zeros from a byte array.
     my.depad = function(bytes)
     {
@@ -3379,7 +3386,7 @@ var cryptico = (function() {
         }
         return newBytes;
     }
-    
+
     // AES CBC Encryption.
     my.encryptAESCBC = function(plaintext, key)
     {
@@ -3419,15 +3426,15 @@ var cryptico = (function() {
         decryptedBlocks = my.depad(decryptedBlocks);
         return my.bytes2string(decryptedBlocks);
     }
-    
+
     // Wraps a string to 60 characters.
-    my.wrap60 = function(string) 
+    my.wrap60 = function(string)
     {
         var outstr = "";
         for(var i = 0; i < string.length; i++) {
             if(i % 60 == 0 && i != 0) outstr += "\n";
             outstr += string[i]; }
-        return outstr; 
+        return outstr;
     }
 
     // Generate a random key for the AES-encrypted message.
@@ -3449,18 +3456,18 @@ var cryptico = (function() {
     }
 
     // Returns the ascii-armored version of the public key.
-    my.publicKeyString = function(rsakey) 
+    my.publicKeyString = function(rsakey)
     {
-        pubkey = my.b16to64(rsakey.n.toString(16));
-        return pubkey; 
+        var pubkey = my.b16to64(rsakey.n.toString(16));
+        return pubkey;
     }
-    
+
     // Returns an MD5 sum of a publicKeyString for easier identification.
     my.publicKeyID = function(publicKeyString)
     {
         return MD5(publicKeyString);
     }
-    
+
     my.publicKeyFromString = function(string)
     {
         var N = my.b64to16(string.split("|")[0]);
@@ -3469,7 +3476,7 @@ var cryptico = (function() {
         rsa.setPublic(N, E);
         return rsa
     }
-    
+
     my.encrypt = function(plaintext, publickeystring, signingkey)
     {
         var cipherblock = "";
@@ -3491,7 +3498,7 @@ var cryptico = (function() {
             plaintext += "::52cee64bb3a38f6403386519a39ac91c::";
             plaintext += signString;
         }
-        cipherblock += my.encryptAESCBC(plaintext, aeskey);    
+        cipherblock += my.encryptAESCBC(plaintext, aeskey);
         return {status: "success", cipher: cipherblock};
     }
 
@@ -3511,16 +3518,16 @@ var cryptico = (function() {
             var signature = my.b64to16(plaintext[2]);
             if(publickey.verifyString(plaintext[0], signature))
             {
-                return {status: "success", 
-                        plaintext: plaintext[0], 
-                        signature: "verified", 
+                return {status: "success",
+                        plaintext: plaintext[0],
+                        signature: "verified",
                         publicKeyString: my.publicKeyString(publickey)};
             }
             else
             {
-                return {status: "success", 
-                        plaintext: plaintext[0], 
-                        signature: "forged", 
+                return {status: "success",
+                        plaintext: plaintext[0],
+                        signature: "forged",
                         publicKeyString: my.publicKeyString(publickey)};
             }
         }
@@ -3534,53 +3541,6 @@ var cryptico = (function() {
 
 }());
 
+return cryptico;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+})));
