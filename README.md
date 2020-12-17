@@ -92,7 +92,9 @@ This shorter key ID can be used to uniquely identify Sam's public key more easil
 
 ## RSA Keys
 
-    cryptico.generateRSAKey(passphrase, bitlength)
+```javascript
+cryptico.generateRSAKey(passphrase, bitlength)
+```
 
 Generates an RSAKey object from a password and bitlength.
 
@@ -102,7 +104,9 @@ Generates an RSAKey object from a password and bitlength.
 
 Returns an `RSAKey` object.
 
-    cryptico.publicKeyString(rsakey)
+```javascript
+cryptico.publicKeyString(rsakey)
+```
 
 Returns the public key portion of an RSAKey object in ascii-armored
 string form, which allows it to be used on websites and in text files
@@ -112,7 +116,9 @@ without fear of corrupting the public key.
 
 Returns an ascii-armored public key string.
     
-    cryptico.publicKeyID(publicKeyString)
+```javascript
+cryptico.publicKeyID(publicKeyString)
+```
 
 Returns an MD5 sum of a `publicKeyString` for easier identification.
 
@@ -122,7 +128,9 @@ Returns an MD5 sum of the public key string.
 
 ## Encryption
 
-    cryptico.encrypt(plaintext, publicKeyString, signingKey)
+```javascript
+cryptico.encrypt(plaintext, publicKeyString, signingKey)
+```
 
 Encrypts a string with the provided public key. Optionally signs the encrypted string with an RSAKey object.
 
@@ -140,7 +148,9 @@ Returns: `status`, `cipher`
 
 ## Decryption
 
-    cryptico.decrypt(ciphertext, key)
+```javascript
+cryptico.decrypt(ciphertext, key)
+```
 
 Decrypts an encrypted message with the recipient's RSAKey and verifies the signature, if any.
 
