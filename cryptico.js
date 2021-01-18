@@ -3446,6 +3446,21 @@ var cryptico = (function() {
         rsa.generate(bitlength, "03");
         return rsa;
     }
+ 
+    // Export RSA key
+    my.exportRSAKey = function(rsaKey) 
+    {
+        return JSON.stringify(rsaKey);
+    }
+
+    // Import RSA key
+    my.importRSAKey = function(json) {
+        if (typeof json === "string") {
+            json = JSON.parse(json);
+        }
+        
+        return Object.assign(new RSAKey, json);
+    }
 
     // Returns the ascii-armored version of the public key.
     my.publicKeyString = function(rsakey) 
