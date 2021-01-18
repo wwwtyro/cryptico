@@ -3446,6 +3446,15 @@ var cryptico = (function() {
         rsa.generate(bitlength, "03");
         return rsa;
     }
+
+    // Returns the ascii-armored version of the public key.
+    my.publicKeyString = function(rsakey) 
+    {
+        pubkey = my.b16to64(rsakey.n.toString(16));
+        return pubkey; 
+    }
+
+    
  
     // Export RSA key
     my.exportRSAKey = function(rsaKey) 
@@ -3460,13 +3469,6 @@ var cryptico = (function() {
         }
         
         return Object.assign(new RSAKey, json);
-    }
-
-    // Returns the ascii-armored version of the public key.
-    my.publicKeyString = function(rsakey) 
-    {
-        pubkey = my.b16to64(rsakey.n.toString(16));
-        return pubkey; 
     }
     
     // Returns an MD5 sum of a publicKeyString for easier identification.

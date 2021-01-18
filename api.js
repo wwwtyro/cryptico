@@ -273,6 +273,23 @@ var cryptico = (function() {
         pubkey = my.b16to64(rsakey.n.toString(16));
         return pubkey; 
     }
+
+    
+ 
+    // Export RSA key
+    my.exportRSAKey = function(rsaKey) 
+    {
+        return JSON.stringify(rsaKey);
+    }
+
+    // Import RSA key
+    my.importRSAKey = function(json) {
+        if (typeof json === "string") {
+            json = JSON.parse(json);
+        }
+        
+        return Object.assign(new RSAKey, json);
+    }
     
     // Returns an MD5 sum of a publicKeyString for easier identification.
     my.publicKeyID = function(publicKeyString)
